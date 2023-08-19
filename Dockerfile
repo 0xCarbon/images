@@ -2,6 +2,16 @@ FROM debian:bookworm-slim
 
 # We use node, clang and ssl defaults from bookworm because that is our base runtime distro
 # For development we install same major nodejs (18.x) from nodesource use corepack
+
+# Get curl
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt install -y \
+    curl \
+    && apt autoremove -y \
+    && apt clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install everything else
 RUN curl --proto '=https' --tlsv1.2 -sSf https://deb.nodesource.com/setup_18.x | sh -s -- -y && \
     export DEBIAN_FRONTEND=noninteractive \
     && apt install -y \
