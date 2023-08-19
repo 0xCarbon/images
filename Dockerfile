@@ -46,6 +46,6 @@ RUN cargo install sqlx-cli --no-default-features --features native-tls,postgres
 RUN corepack enable
 RUN corepack prepare pnpm@8.6.12 --activate
 RUN corepack prepare yarn@3.6.2 --activate
-RUN . .bashrc
+RUN . $HOME/.bashrc
 
 CMD [ "sleep", "infinity" ]
