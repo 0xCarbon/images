@@ -37,7 +37,7 @@ USER $USERNAME
 
 # Install Rust, our standard is 1.71 - we will set that in the toolchain for the project
 ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld"
-ENV PATH="/root/.cargo/bin:$PATH"
+ENV PATH="$HOME/.cargo/bin:$PATH"
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
 RUN rustup toolchain install 1.71 --component rust-analyzer llvm-tools
 RUN cargo install sqlx-cli --no-default-features --features native-tls,postgres
