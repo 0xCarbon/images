@@ -28,6 +28,7 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     libssl-dev \
     git \
     nodejs \
+    postgresql-client-15 \
     # Clean up
     && apt autoremove -y \
     && apt clean -y \
@@ -55,7 +56,9 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --de
 # Pin pnpm to 8.6.12 and yarn 3.6.2 to stable 
 RUN sudo corepack enable \
     && corepack prepare pnpm@8.6.12 --activate \
-    && corepack prepare yarn@3.6.2 --activate
+    && corepack prepare yarn@3.6.2 --activate \
+    && pnpm setup \
+    && pnpm install -g redis-cli
 
 # Source env and go to app folder from now on
 RUN . /home/dev/.bashrc
