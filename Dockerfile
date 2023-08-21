@@ -58,10 +58,9 @@ RUN sudo corepack enable \
     && corepack prepare pnpm@8.6.12 --activate \
     && corepack prepare yarn@3.6.2 --activate \
     && pnpm setup \
+    && . /home/dev/.bashrc \
     && pnpm install -g redis-cli
 
-# Source env and go to app folder from now on
-RUN . /home/dev/.bashrc
 WORKDIR /app
 
 CMD [ "sleep", "infinity" ]
