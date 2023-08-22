@@ -35,10 +35,10 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user to use - see https://aka.ms/vscode-remote/containers/non-root-user.
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME -d /home/dev \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
+RUN groupadd --gid $USER_GID $USERNAME && \
+    useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME -d /home/dev && \
+    echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
+    chmod 0440 /etc/sudoers.d/$USERNAME
 
 # Change to nonroot user so files created are not root owned on host
 USER $USERNAME
@@ -49,9 +49,12 @@ ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld" \
     RUSTUP_HOME="/home/dev/.rustup" \
     PATH="/home/dev/.cargo/bin:$PATH"
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none \
-    && rustup toolchain install 1.71 --component rust-analyzer llvm-tools \
-    && cargo install sqlx-cli --no-default-features --features native-tls,postgres
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && \
+    rustup toolchain install 1.71 --component rust-analyzer llvm-tools
+
+# Install our cargo tools defaulted on 0xCarbon
+RUN cargo install cargo-audit cargo-expand cargo-tarpaulin cargo-deny && \
+    cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
 # Pin pnpm to 8.6.12 and yarn 3.6.2 to stable 
 RUN sudo corepack enable \
@@ -61,6 +64,6 @@ RUN sudo corepack enable \
     && . /home/dev/.bashrc \
     && pnpm install -g redis-cli
 
-WORKDIR /app
+WORKDIR /workspaces
 
 CMD [ "sleep", "infinity" ]
