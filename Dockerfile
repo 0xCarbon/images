@@ -10,7 +10,7 @@ ARG USER_GID=$USER_UID
 RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     && apt -y install --no-install-recommends \
     curl \
-    ca-certificates \
+    ca-certificates locales \
     procps sudo lsb-release apt-utils \
     # Clean up
     && apt autoremove -y \
@@ -33,6 +33,13 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     && apt autoremove -y \
     && apt clean -y \
     && rm -rf /var/lib/apt/lists/*
+
+# Configure default local for code dev
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
+
+ENV LANG en_US.UTF-8
 
 # Create a non-root user to use - see https://aka.ms/vscode-remote/containers/non-root-user.
 RUN groupadd --gid $USER_GID $USERNAME && \
