@@ -12,6 +12,8 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     curl \
     ca-certificates locales \
     procps sudo lsb-release apt-utils \
+    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 23F3D4EA75716059 \
+    && apt-add-repository -u https://cli.github.com/packages && \
     # Install our default compiler, db client and node version
     && curl --proto '=https' --tlsv1.2 -sSf https://deb.nodesource.com/setup_18.x | sh -s -- -y \
     && export DEBIAN_FRONTEND=noninteractive \
