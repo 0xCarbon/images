@@ -1,0 +1,27 @@
+FROM debian:bookworm-slim
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    # Remove imagemagick due to https://security-tracker.debian.org/tracker/CVE-2019-10131
+    && apt-get purge -y imagemagick imagemagick-6-common \
+    && apt upgrade -y \
+    && apt install -y --no-install-recommends openssl ca-certificates locales \
+    # Clean up
+    && apt autoremove -y \
+    && apt clean -y \
+    && rm -rf /var/lib/apt/lists/*
+# Configure default locale for code prod
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
+ENV USERNAME=prod \
+    USER_UID=1000 \
+    USER_GID=1000 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8 \
+    RUST_BACKTRACE=1 \
+    NODE_ENV=production
+# Run as non-root user
+RUN groupadd --gid 1000 prod && \
+    useradd -s /bin/bash --uid 1000 --gid 1000 -m prod -d /home/prod
+USER prod
+WORKDIR /app
