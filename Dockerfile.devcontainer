@@ -69,7 +69,7 @@ RUN sudo corepack enable && \
     corepack prepare pnpm@8.6.12 --activate && \
     corepack prepare yarn@3.6.2 --activate && \
     pnpm setup && \
-    pnpm install -g redis-cli@2.1.2
+    pnpm install -g redis-cli
 
 RUN . /home/dev/.bashrc
 WORKDIR /workspaces
