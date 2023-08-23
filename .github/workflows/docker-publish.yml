@@ -51,7 +51,7 @@ jobs:
         id: meta-devcontainer
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-devcontainer
+          images: ${{ env.REGISTRY }}/devcontainer
 
       - name: Build and push Docker image for devcontainer
         id: build-and-push-devcontainer
@@ -77,7 +77,7 @@ jobs:
         id: meta-runtime
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-runtime
+          images: ${{ env.REGISTRY }}/runtime
 
       - name: Build and push Docker image for runtime
         id: build-and-push-runtime
