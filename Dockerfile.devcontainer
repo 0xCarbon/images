@@ -5,18 +5,19 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 # We use clang and ssl defaults from bookworm because that is our base runtime distro
-# For development we install same major nodejs version (18.x) from nodesource to use corepack
+# Install major nodejs LTS version (20.x) from nodesource to use corepack
 # First install basic tools and create dev user
 RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     && apt -y install --no-install-recommends \
+    gnupg \
+    software-properties-common \
     curl \
     ca-certificates locales \
     procps sudo lsb-release apt-utils \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 23F3D4EA75716059 \
-    && apt-add-repository -u https://cli.github.com/packages && \
+    && apt-add-repository -u https://cli.github.com/packages \
     # Install our default compiler, db client and node version
-    && curl --proto '=https' --tlsv1.2 -sSf https://deb.nodesource.com/setup_18.x | sh -s -- -y \
-    && export DEBIAN_FRONTEND=noninteractive \
+    && curl --proto '=https' --tlsv1.2 -sSf https://deb.nodesource.com/setup_20.x | sh -s -- -y \
     && apt install -y --no-install-recommends \
     lld \
     lldb \
@@ -51,20 +52,20 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 # Change to nonroot user so files created are not root owned on host
 USER $USERNAME
 
-# Install Rust, our standard is 1.71 - you must pin it in the toolchain for the project
+# Install Rust, our standard is 1.75 - you must pin it in the toolchain for the project
 ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld" \
     CARGO_HOME="/home/dev/.cargo" \
     RUSTUP_HOME="/home/dev/.rustup" \
     PNPM_HOME="/home/dev/.local/share/pnpm" \
     PATH="/home/dev/.cargo/bin:/home/dev/.local/share/pnpm:$PATH" \
     SHELL="/bin/bash"
-    
+
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && \
-    rustup toolchain install 1.71 --component rust-analyzer llvm-tools
+    rustup toolchain install 1.75 --component rust-analyzer llvm-tools
 
 # Install our detault cargo tools on 0xCarbon
 RUN cargo install cargo-audit cargo-expand cargo-tarpaulin cargo-deny cargo-fuzz && \
-    cargo install sqlx-cli --no-default-features --features native-tls,postgres
+    cargo install --version='0.6.3' sqlx-cli --no-default-features --features rustls,postgres
 
 # Pin pnpm to 8.6.12 and yarn 3.6.2 to stable 
 RUN sudo corepack enable && \
