@@ -8,10 +8,12 @@ on:
     tags: ['v*.*.*']
     paths:
       - 'Dockerfile.*'
+      - '.github/workflows/docker-publish.yml'
   pull_request:
     branches: ['main']
     paths:
       - 'Dockerfile.*'
+      - '.github/workflows/docker-publish.yml'
 
 env:
   REGISTRY: ghcr.io
