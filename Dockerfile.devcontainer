@@ -28,6 +28,7 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     libssl-dev \
     git \
     nodejs \
+    openjdk-17-jdk-headless \
     postgresql-client-15 \
     # Clean up
     && apt autoremove -y \
@@ -42,6 +43,9 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 ENV LANG en_US.UTF-8 \
     LANGUAGE en_US:en \
     LC_ALL en_US.UTF-8
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
+    PATH=$JAVA_HOME/bin:$PATH
 
 # Create a non-root user to use - see https://aka.ms/vscode-remote/containers/non-root-user.
 RUN groupadd --gid $USER_GID $USERNAME && \
