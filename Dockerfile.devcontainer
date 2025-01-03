@@ -25,11 +25,13 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     curl \
     make \
     pkg-config \
+    protobuf-compiler \
     libssl-dev \
     git \
     nodejs \
     openjdk-17-jdk-headless \
     postgresql-client-15 \
+    openssh-client \
     # Clean up
     && apt autoremove -y \
     && apt clean -y \
@@ -56,7 +58,7 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 # Change to nonroot user so files created are not root owned on host
 USER $USERNAME
 
-# Install Rust, our standard is 1.75 - you must pin it in the toolchain for the project
+# Install Rust, our standard is the latest stable - you must pin it in the toolchain for the project
 ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld" \
     CARGO_HOME="/home/dev/.cargo" \
     RUSTUP_HOME="/home/dev/.rustup" \
@@ -65,7 +67,7 @@ ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld" \
     SHELL="/bin/bash"
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && \
-    rustup toolchain install 1.80 --component rust-analyzer llvm-tools
+    rustup toolchain install 1.83 --component rust-analyzer llvm-tools
 
 # Install our detault cargo tools on 0xCarbon
 RUN cargo install cargo-audit cargo-expand cargo-tarpaulin cargo-deny cargo-fuzz && \
