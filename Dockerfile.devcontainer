@@ -67,7 +67,7 @@ ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld" \
     SHELL="/bin/bash"
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && \
-    rustup toolchain install stable --component rust-analyzer llvm-tools
+    rustup toolchain install 1.83 --component rust-analyzer llvm-tools
 
 # Install our detault cargo tools on 0xCarbon
 RUN cargo install cargo-audit cargo-expand cargo-tarpaulin cargo-deny cargo-fuzz && \
