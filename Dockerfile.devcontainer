@@ -26,6 +26,7 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     make \
     pkg-config \
     protobuf-compiler \
+    libprotobuf-dev \
     libssl-dev \
     git \
     nodejs \
@@ -36,6 +37,8 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     && apt autoremove -y \
     && apt clean -y \
     && rm -rf /var/lib/apt/lists/*
+
+ENV PROTOC="/usr/bin/protoc"
 
 # Configure default locale for code dev
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
