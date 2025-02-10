@@ -74,7 +74,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --de
 
 # Install our detault cargo tools on 0xCarbon
 RUN cargo install cargo-audit cargo-expand cargo-tarpaulin cargo-deny cargo-fuzz && \
-    cargo install --version='0.6.3' sqlx-cli --no-default-features --features rustls,postgres
+    cargo install sqlx-cli --no-default-features --features rustls,postgres
 
 # Pin pnpm to 8.15.9 and yarn 3.6.2 to stable 
 RUN sudo corepack enable && \
