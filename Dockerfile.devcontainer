@@ -33,8 +33,6 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     openjdk-17-jdk-headless \
     postgresql-client-15 \
     openssh-client \
-    python3.11 \
-    python3.11-venv \
     # Clean up
     && apt autoremove -y \
     && apt clean -y \
@@ -62,6 +60,15 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 
 # Change to nonroot user so files created are not root owned on host
 USER $USERNAME
+
+# Install uv - python package manager
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Make uv available in the path for subsequent RUN commands and for the container
+ENV PATH="/home/dev/.local/bin:$PATH"
+
+# Install Python 3.11 using uv
+RUN uv python install 3.11
 
 # Install Rust, our standard is the latest stable - you must pin it in the toolchain for the project
 ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld" \
