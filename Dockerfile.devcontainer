@@ -51,12 +51,25 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     nodejs \
     openjdk-17-jdk-headless \
     postgresql-client-15 \
+    poppler-utils \
     openssh-client \
+    wget \
+    libomp5 \
+    libgomp1 \
     # Clean up
     && apt autoremove -y \
     && apt clean -y \
     && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/google-chrome.list
 
+# Download and install ONNX Runtime GPU (compatible with ort 2.0.0-rc.10)
+ENV ORT_VERSION=1.22.0
+RUN wget -q https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-gpu-${ORT_VERSION}.tgz \
+    && tar -xzf onnxruntime-linux-x64-gpu-${ORT_VERSION}.tgz \
+    && mv onnxruntime-linux-x64-gpu-${ORT_VERSION} /opt/onnxruntime \
+    && rm onnxruntime-linux-x64-gpu-${ORT_VERSION}.tgz
+
+ENV ORT_LIB_LOCATION=/opt/onnxruntime/lib
+ENV LD_LIBRARY_PATH="${ORT_LIB_LOCATION}:${LD_LIBRARY_PATH}"
 ENV PROTOC="/usr/bin/protoc"
 
 # Configure default locale for code dev
@@ -90,12 +103,13 @@ ENV PATH="/home/dev/.local/bin:$PATH"
 RUN uv python install 3.11
 
 # Install Rust, our standard is the latest stable - you must pin it in the toolchain for the project
-ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld" \
+ENV RUSTFLAGS="-C linker=clang -C link-arg=-fuse-ld=lld -C target-cpu=x86-64" \
     CARGO_HOME="/home/dev/.cargo" \
     RUSTUP_HOME="/home/dev/.rustup" \
     PNPM_HOME="/home/dev/.local/share/pnpm" \
     PATH="/home/dev/.cargo/bin:/home/dev/.local/share/pnpm:$PATH" \
-    SHELL="/bin/bash"
+    SHELL="/bin/bash" \
+    ORT_STRATEGY=system
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && \
     rustup toolchain install 1.88 --component rust-analyzer,llvm-tools
