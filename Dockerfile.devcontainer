@@ -12,13 +12,32 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     gnupg \
     software-properties-common \
     curl \
+    wget \
     ca-certificates locales \
     procps sudo lsb-release apt-utils \
     && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 23F3D4EA75716059 \
     && apt-add-repository -u https://cli.github.com/packages \
+    # Add google chrome repo
+    && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome-keyring.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     # Install our default compiler, db client and node version
     && curl --proto '=https' --tlsv1.2 -sSf https://deb.nodesource.com/setup_20.x | sh -s -- -y \
+    && apt-get update \
     && apt install -y --no-install-recommends \
+    # Chrome
+    google-chrome-stable \
+    # Cypress dependencies
+    libgtk2.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    libnotify-dev \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libxtst6 \
+    xauth \
+    xvfb \
+    # Other dependencies
     lld \
     lldb \
     clang \
@@ -36,7 +55,7 @@ RUN apt update && export DEBIAN_FRONTEND=noninteractive \
     # Clean up
     && apt autoremove -y \
     && apt clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/google-chrome.list
 
 ENV PROTOC="/usr/bin/protoc"
 
